@@ -1,0 +1,7 @@
+{
+  "name": "collector-mobile",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
