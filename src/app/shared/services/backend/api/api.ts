@@ -1,0 +1,15 @@
+export * from './fileDownloadController.service';
+import { FileDownloadControllerService } from './fileDownloadController.service';
+export * from './fileUploadController.service';
+import { FileUploadControllerService } from './fileUploadController.service';
+export * from './pieceCategoryController.service';
+import { PieceCategoryControllerService } from './pieceCategoryController.service';
+export * from './pieceController.service';
+import { PieceControllerService } from './pieceController.service';
+export * from './pieceFamilyController.service';
+import { PieceFamilyControllerService } from './pieceFamilyController.service';
+export * from './pieceSubCategoryController.service';
+import { PieceSubCategoryControllerService } from './pieceSubCategoryController.service';
+export * from './pingController.service';
+import { PingControllerService } from './pingController.service';
+export const APIS = [FileDownloadControllerService, FileUploadControllerService, PieceCategoryControllerService, PieceControllerService, PieceFamilyControllerService, PieceSubCategoryControllerService, PingControllerService];
