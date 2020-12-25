@@ -141,6 +141,7 @@ export class PiecePage implements OnInit {
           pieceSubCategoryId: this.pieceSubCategorySelected.id,
           name: this.pieceNameSelected,
           fileName: fileName,
+          country: 'us',
           creationDate: new Date()
         };
 
