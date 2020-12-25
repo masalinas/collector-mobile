@@ -1,8 +1,22 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <!--<ion-toolbar>
     <ion-title>
       Photo Gallery
     </ion-title>
+  </ion-toolbar>-->
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancelPiece($event)">
+        Cancel
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="savePiece($event)">
+        Save
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>New Piece</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -43,7 +57,7 @@
   </ion-item>
 
   <ion-item>
-    <ion-label >Name</ion-label>
+    <ion-label>Name*</ion-label>
     <ion-input [(ngModel)]="pieceNameSelected" placeholder="Piece name"></ion-input>
   </ion-item>
 

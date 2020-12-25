@@ -7,6 +7,7 @@ import { PieceFamily, PieceCategory, PieceSubCategory, Piece } from '../../share
 import { PieceFamilyControllerService,
          PieceCategoryControllerService,
          PieceSubCategoryControllerService,
+         FileUploadControllerService,
          PieceControllerService } from '../../shared/services/backend/api/api';
 
 @Component({
@@ -20,15 +21,16 @@ export class PiecePage implements OnInit {
   public pieceSubCategorySelected: PieceSubCategory;
   public pieceNameSelected: string;
 
-  private pieceFamilies: PieceFamily[];
-  private pieceCategories: PieceCategory[];
-  private pieceSubCategories: PieceSubCategory[];
+  public pieceFamilies: PieceFamily[];
+  public pieceCategories: PieceCategory[];
+  public pieceSubCategories: PieceSubCategory[];
 
   constructor(public actionSheetController: ActionSheetController,
               public pieceFamilyControllerService: PieceFamilyControllerService,
               public pieceCategoryControllerService: PieceCategoryControllerService,
               public pieceSubCategoryControllerService: PieceSubCategoryControllerService,
               public pieceControllerService: PieceControllerService,
+              public fileUploadControllerService: FileUploadControllerService,
               public photoService: PhotoService) { }
 
   async ngOnInit() {
@@ -111,5 +113,40 @@ export class PiecePage implements OnInit {
       }]
     });
     await actionSheet.present();
+  }
+
+  public cancelPiece(event: any) {
+
+  }
+
+  public async savePiece(event: any) {
+    const base64Response = await fetch(this.photoService.photos[0].webviewPath!);
+    const fileName: string = this.photoService.photos[0].filepath;
+    const blob = await base64Response.blob();
+
+    this.fileUploadControllerService.fileUploadControllerFileUpload(blob, fileName)
+      .subscribe((result: any) => {
+        console.log(result);
+
+        let piece: Piece = {
+          pieceFamilyId: this.pieceFamilySelected.id,
+          pieceCategoryId: this.pieceCategorySelected.id,
+          pieceSubCategoryId: this.pieceSubCategorySelected.id,
+          name: this.pieceNameSelected,
+          fileName: fileName
+        };
+
+        this.pieceControllerService.pieceControllerCreate(piece)
+          .subscribe((result: any) => {
+            console.log(result);
+
+        },
+        err => {
+          console.log(err);
+        });
+    },
+    err => {
+      console.log(err);
+    });
   }
 }
