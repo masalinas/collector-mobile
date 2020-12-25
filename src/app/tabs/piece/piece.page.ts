@@ -3,12 +3,17 @@ import { ActionSheetController } from '@ionic/angular';
 
 import { Photo, PhotoService } from '../../services/photo.service';
 
-import { PieceFamily, PieceCategory, PieceSubCategory, Piece } from '../../shared/services/backend/model/models';
+import { PieceFamily,
+         PieceCategory,
+         PieceSubCategory,
+         Piece
+       } from '../../shared/services/backend/model/models';
 import { PieceFamilyControllerService,
          PieceCategoryControllerService,
          PieceSubCategoryControllerService,
          FileUploadControllerService,
-         PieceControllerService } from '../../shared/services/backend/api/api';
+         PieceControllerService
+       } from '../../shared/services/backend/api/api';
 
 @Component({
   selector: 'app-piece',
@@ -116,24 +121,27 @@ export class PiecePage implements OnInit {
   }
 
   public cancelPiece(event: any) {
-
   }
 
   public async savePiece(event: any) {
+    // get image from local storage
     const base64Response = await fetch(this.photoService.photos[0].webviewPath!);
-    const fileName: string = this.photoService.photos[0].filepath;
-    const blob = await base64Response.blob();
 
+    // get blob and filename
+    const blob = await base64Response.blob();
+    const fileName: string = this.photoService.photos[0].filepath;
+
+    // upload the image of the piece
     this.fileUploadControllerService.fileUploadControllerFileUpload(blob, fileName)
       .subscribe((result: any) => {
-        console.log(result);
-
+        // create a new piece
         let piece: Piece = {
           pieceFamilyId: this.pieceFamilySelected.id,
           pieceCategoryId: this.pieceCategorySelected.id,
           pieceSubCategoryId: this.pieceSubCategorySelected.id,
           name: this.pieceNameSelected,
-          fileName: fileName
+          fileName: fileName,
+          creationDate: new Date()
         };
 
         this.pieceControllerService.pieceControllerCreate(piece)
