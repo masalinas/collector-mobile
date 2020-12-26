@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActionSheetController } from '@ionic/angular';
+import { ActionSheetController, ToastController } from '@ionic/angular';
 
 import { Photo, PhotoService } from '../../services/photo.service';
 
@@ -31,6 +31,7 @@ export class PiecePage implements OnInit {
   public pieceSubCategories: PieceSubCategory[];
 
   constructor(public actionSheetController: ActionSheetController,
+              public toastController: ToastController,
               public pieceFamilyControllerService: PieceFamilyControllerService,
               public pieceCategoryControllerService: PieceCategoryControllerService,
               public pieceSubCategoryControllerService: PieceSubCategoryControllerService,
@@ -42,8 +43,27 @@ export class PiecePage implements OnInit {
     this.getFamilies();
 
     // load images from storage
-    await this.photoService.loadSaved();
+    //await this.photoService.loadSaved();
   }
+
+  private initializeForm() {
+    this.pieceFamilySelected = undefined;
+    this.pieceCategorySelected = undefined;
+    this.pieceCategories = [];
+    this.pieceSubCategorySelected = undefined;
+    this.pieceSubCategories = [];
+    this.pieceNameSelected = undefined;
+
+    this.photoService.photos = [];
+  }
+
+  private async presentToast(message: string) {
+     const toast = await this.toastController.create({
+       message: message,
+       duration: 2000
+     });
+     toast.present();
+   }
 
   private getFamilies() {
     this.pieceFamilyControllerService.pieceFamilyControllerFind()
@@ -56,27 +76,31 @@ export class PiecePage implements OnInit {
   }
 
   private getCategoriesByFamily() {
-    let filter: any = {filter: JSON.stringify({where: {pieceFamilyId: this.pieceFamilySelected.id}})};
+    if (this.pieceFamilySelected) {
+      let filter: any = {filter: JSON.stringify({where: {pieceFamilyId: this.pieceFamilySelected.id}})};
 
-    this.pieceCategoryControllerService.pieceCategoryControllerFind(filter)
-      .subscribe((pieceCategories: any) => {
-        this.pieceCategories = pieceCategories;
-    },
-    err => {
-      console.log(err);
-    });
+      this.pieceCategoryControllerService.pieceCategoryControllerFind(filter)
+        .subscribe((pieceCategories: any) => {
+          this.pieceCategories = pieceCategories;
+      },
+      err => {
+        console.log(err);
+      });
+    }
   }
 
   private getSubCategoriesByCategory() {
-    let filter: any = {filter: JSON.stringify({where: {pieceCategoryId: this.pieceCategorySelected.id}})};
+    if (this.pieceCategorySelected) {
+      let filter: any = {filter: JSON.stringify({where: {pieceCategoryId: this.pieceCategorySelected.id}})};
 
-    this.pieceSubCategoryControllerService.pieceSubCategoryControllerFind(filter)
-      .subscribe((pieceSubCategories: any) => {
-        this.pieceSubCategories = pieceSubCategories;
-    },
-    err => {
-      console.log(err);
-    });
+      this.pieceSubCategoryControllerService.pieceSubCategoryControllerFind(filter)
+        .subscribe((pieceSubCategories: any) => {
+          this.pieceSubCategories = pieceSubCategories;
+      },
+      err => {
+        console.log(err);
+      });
+    }
   }
 
   public onSelectFamily(event: any) {
@@ -121,9 +145,20 @@ export class PiecePage implements OnInit {
   }
 
   public cancelPiece(event: any) {
+    this.initializeForm();
   }
 
   public async savePiece(event: any) {
+    if (this.pieceFamilySelected === undefined ||
+        this.pieceCategorySelected === undefined ||
+        this.pieceSubCategorySelected  === undefined ||
+        this.pieceNameSelected  === undefined ||
+        this.photoService.photos.length === 0) {
+          this.presentToast('Fill all mandatory piece fields.');
+
+          return;
+        }
+
     // get the first image from local storage
     const base64Response = await fetch(this.photoService.photos[0].webviewPath!);
 
@@ -147,8 +182,9 @@ export class PiecePage implements OnInit {
 
         this.pieceControllerService.pieceControllerCreate(piece)
           .subscribe((result: any) => {
-            console.log(result);
+            this.initializeForm();
 
+            this.presentToast('Your piece have been saved.');
         },
         err => {
           console.log(err);

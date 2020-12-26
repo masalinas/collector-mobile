@@ -60,10 +60,10 @@ export class PhotoService {
     this.photos.unshift(savedImageFile);
 
     // Cache all photo data for future retrieval
-    Storage.set({
+    /*Storage.set({
       key: this.PHOTO_STORAGE,
       value: JSON.stringify(this.photos)
-    });
+    });*/
   }
 
   // Save picture to file on device
