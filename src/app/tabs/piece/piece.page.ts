@@ -124,12 +124,12 @@ export class PiecePage implements OnInit {
   }
 
   public async savePiece(event: any) {
-    // get image from local storage
+    // get the first image from local storage
     const base64Response = await fetch(this.photoService.photos[0].webviewPath!);
 
     // get blob and filename
     const blob = await base64Response.blob();
-    const fileName: string = this.photoService.photos[0].filepath;
+    const fileName: string = new Date().getTime() + '.jpeg';
 
     // upload the image of the piece
     this.fileUploadControllerService.fileUploadControllerFileUpload(blob, fileName)
