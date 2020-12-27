@@ -2,19 +2,28 @@ import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GalleryPage } from './gallery.page';
-import { ExploreContainerComponentModule } from '../../explore-container/explore-container.module';
 
 import { GalleryPageRoutingModule } from './gallery-routing.module';
+
+import { PieceFilterPipe } from '../../pipes/FilterPipe';
+
+import { GalleryPage } from './gallery.page';
+import { PieceCardComponent } from './piece-card/piece-card.component';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
-    FormsModule,
-    ExploreContainerComponentModule,
+    FormsModule,        
     GalleryPageRoutingModule
   ],
-  declarations: [GalleryPage]
+  declarations: [
+    PieceFilterPipe,
+    GalleryPage,
+    PieceCardComponent
+  ],
+  entryComponents: [
+    PieceCardComponent,
+  ]
 })
 export class GalleryPageModule {}
