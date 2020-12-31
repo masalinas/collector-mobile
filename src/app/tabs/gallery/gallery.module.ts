@@ -9,18 +9,20 @@ import { PieceFilterPipe } from '../../pipes/FilterPipe';
 
 import { GalleryPage } from './gallery.page';
 import { PieceCardComponent } from './piece-card/piece-card.component';
+import { PiecePageModule } from '../piece/piece.module';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
-    FormsModule,        
-    GalleryPageRoutingModule
+    FormsModule,
+    GalleryPageRoutingModule,
+    PiecePageModule
   ],
   declarations: [
     PieceFilterPipe,
     GalleryPage,
-    PieceCardComponent
+    PieceCardComponent,
   ],
   entryComponents: [
     PieceCardComponent,

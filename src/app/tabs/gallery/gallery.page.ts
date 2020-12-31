@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController, IonItemSliding } from '@ionic/angular';
 import { PieceCardComponent } from './piece-card/piece-card.component';
+import { PiecePage } from '../piece/piece.page';
 
 import { Photo, PhotoService } from '../../services/photo.service';
 
@@ -20,11 +21,22 @@ export class GalleryPage {
   public gallery: any[] = [];
   public galleryFiltered: any [];
 
+  @ViewChild(IonItemSliding) slidingItem: IonItemSliding;
+
   constructor(public modalController: ModalController,
+              public toastController: ToastController,
               public pieceControllerService: PieceControllerService,
               public fileDownloadControllerService: FileDownloadControllerService,
               public photoService: PhotoService) {
   }
+
+  private async presentToast(message: string) {
+     const toast = await this.toastController.create({
+       message: message,
+       duration: 2000
+     });
+     toast.present();
+   }
 
   convertBlobToBase64 = (blob) => new Promise((resolve, reject) => {
       const reader = new FileReader;
@@ -62,7 +74,11 @@ export class GalleryPage {
     });
   }
 
-  public async showDetail(item: any) {
+  public onSearch(event) {
+    this.galleryFiltered = this.gallery.filter(item => item.piece.name.includes(event.target.value));
+  }
+
+  public async onShowDetail(item: any) {
     const modal = await this.modalController.create({
       component: PieceCardComponent,
       //cssClass: 'my-custom-class',
@@ -75,7 +91,30 @@ export class GalleryPage {
     return await modal.present();
   }
 
-  public onSearch(event) {    
-    this.galleryFiltered = this.gallery.filter(item => item.piece.name.includes(event.target.value));
+  public async onUpdatePiece(item: any) {
+      const modal = await this.modalController.create({
+        component: PiecePage,
+        componentProps: {
+          //'modal': modal,
+          'item': item
+        }
+      });
+
+      await modal.present();
+      await modal.onDidDismiss();
+
+      this.slidingItem.close();
+  }
+
+  public onDeletePiece(item: any) {
+    this.pieceControllerService.pieceControllerDeleteById(item.piece.id)
+      .subscribe((result: any) => {
+        this.getPieces();
+
+        this.presentToast('Your piece have been removed.');
+    },
+    err => {
+      console.log(err);
+    });
   }
 }

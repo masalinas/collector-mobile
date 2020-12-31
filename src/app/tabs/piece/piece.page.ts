@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActionSheetController, ToastController } from '@ionic/angular';
+import { ActionSheetController, ModalController, ToastController } from '@ionic/angular';
 
 import { Photo, PhotoService } from '../../services/photo.service';
 
@@ -31,6 +31,7 @@ export class PiecePage implements OnInit {
   public pieceSubCategories: PieceSubCategory[];
 
   constructor(public actionSheetController: ActionSheetController,
+              public modalController: ModalController,
               public toastController: ToastController,
               public pieceFamilyControllerService: PieceFamilyControllerService,
               public pieceCategoryControllerService: PieceCategoryControllerService,
@@ -146,6 +147,10 @@ export class PiecePage implements OnInit {
 
   public cancelPiece(event: any) {
     this.initializeForm();
+
+    this.modalController.dismiss({
+      'dismissed': true
+    });
   }
 
   public async savePiece(event: any) {

@@ -17,6 +17,7 @@ import { PiecePageRoutingModule } from './piece-routing.module';
     ExploreContainerComponentModule,
     PiecePageRoutingModule
   ],
-  declarations: [PiecePage]
+  declarations: [PiecePage],
+  exports: [PiecePage]
 })
 export class PiecePageModule {}

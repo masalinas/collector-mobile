@@ -17,8 +17,8 @@ export class PieceCardComponent {
 
   @Input() item: any;
 
-  constructor(public modalController: ModalController,) {
-  }  
+  constructor(public modalController: ModalController) {
+  }
 
   public dismissModal() {
     this.modalController.dismiss({
