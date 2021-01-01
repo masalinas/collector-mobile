@@ -9,16 +9,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PieceCategoryIncludeFilterItems1 } from './pieceCategoryIncludeFilterItems1';
 
 
-export interface PieceCategoryFilter1 { 
+export interface PieceScopeFilter1 { 
     offset?: number;
     limit?: number;
     skip?: number;
     order?: string | Array<string>;
     where?: { [key: string]: object; };
     fields?: any | Array<string>;
-    include?: Array<PieceCategoryIncludeFilterItems1 | string>;
+    include?: Array<{ [key: string]: object; }>;
 }
 

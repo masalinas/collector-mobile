@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PieceSubCategoryIncludeFilterItems } from './pieceSubCategoryIncludeFilterItems';
+import { PieceSubCategoryIncludeFilterItems1 } from './pieceSubCategoryIncludeFilterItems1';
 
 
 export interface PieceSubCategoryFilter1 { 
@@ -19,6 +19,6 @@ export interface PieceSubCategoryFilter1 {
     order?: string | Array<string>;
     where?: { [key: string]: object; };
     fields?: any | Array<string>;
-    include?: Array<PieceSubCategoryIncludeFilterItems | string>;
+    include?: Array<PieceSubCategoryIncludeFilterItems1 | string>;
 }
 

@@ -26,6 +26,10 @@ export interface PieceWithRelations {
      */
     id?: string;
     /**
+     * Share image file name
+     */
+    fileName: string;
+    /**
      * Share name
      */
     name: string;
@@ -34,41 +38,45 @@ export interface PieceWithRelations {
      */
     description?: string;
     /**
-     * Rarity
+     * Share Rarity
      */
     rarity?: string;
     /**
-     * The issuer
+     * Share issuer
      */
     issuer?: string;
     /**
-     * Signatures
+     * Share signatures
      */
     signatures?: string;
     /**
-     * Quality of engraving
+     * Share quality of engraving
      */
     quality?: string;
     /**
-     * Overall appearance
+     * Share overall appearance
      */
     appearance?: string;
     /**
-     * Condition
+     * Share condition
      */
     condition?: string;
     /**
-     * Date of issue
+     * Share date of issue
      */
     issueDate?: string;
     /**
-     * Price estimate
+     * Share price estimate
      */
     price?: number;
     /**
-     * Share country iso code
+     * Share share country iso code
      */
     country?: string;
+    /**
+     * Share creation date
+     */
+    creationDate: string;
     pieceFamilyId?: string;
     pieceCategoryId?: string;
     pieceSubCategoryId?: string;

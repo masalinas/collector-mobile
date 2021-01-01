@@ -3,8 +3,7 @@ import { Configuration } from './configuration';
 import { HttpClient } from '@angular/common/http';
 
 
-import { FileDownloadControllerService } from './api/fileDownloadController.service';
-import { FileUploadControllerService } from './api/fileUploadController.service';
+import { FileControllerService } from './api/fileController.service';
 import { PieceCategoryControllerService } from './api/pieceCategoryController.service';
 import { PieceControllerService } from './api/pieceController.service';
 import { PieceFamilyControllerService } from './api/pieceFamilyController.service';

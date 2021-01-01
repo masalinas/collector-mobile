@@ -8,7 +8,8 @@ import { Photo, PhotoService } from '../../services/photo.service';
 
 import { Piece } from '../../shared/services/backend/model/models';
 import { PieceControllerService,
-         FileDownloadControllerService} from '../../shared/services/backend/api/api';
+         FileControllerService,
+        } from '../../shared/services/backend/api/api';
 
 @Component({
   selector: 'app-gallery',
@@ -26,7 +27,7 @@ export class GalleryPage {
   constructor(public modalController: ModalController,
               public toastController: ToastController,
               public pieceControllerService: PieceControllerService,
-              public fileDownloadControllerService: FileDownloadControllerService,
+              public fileControllerService: FileControllerService,
               public photoService: PhotoService) {
   }
 
@@ -58,7 +59,7 @@ export class GalleryPage {
 
         this.gallery = [];
         this.pieces.forEach(piece => {
-          this.fileDownloadControllerService.fileDownloadControllerDownloadFile(piece.fileName)
+          this.fileControllerService.fileControllerDownloadFile(piece.fileName)
             .subscribe(async (blob: any) => {
               const imagePath = await this.convertBlobToBase64(blob);
 
@@ -101,17 +102,23 @@ export class GalleryPage {
       });
 
       await modal.present();
-      await modal.onDidDismiss();
+      //await modal.onDidDismiss();
 
-      this.slidingItem.close();
+      //this.slidingItem.close();
   }
 
   public onDeletePiece(item: any) {
-    this.pieceControllerService.pieceControllerDeleteById(item.piece.id)
+    this.fileControllerService.fileControllerDeleteByName(item.piece.fileName)
       .subscribe((result: any) => {
-        this.getPieces();
+        this.pieceControllerService.pieceControllerDeleteById(item.piece.id)
+          .subscribe((result: any) => {
+            this.getPieces();
 
-        this.presentToast('Your piece have been removed.');
+            this.presentToast('Your piece have been removed.');
+        },
+        err => {
+          console.log(err);
+        });
     },
     err => {
       console.log(err);

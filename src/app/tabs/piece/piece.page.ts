@@ -11,7 +11,7 @@ import { PieceFamily,
 import { PieceFamilyControllerService,
          PieceCategoryControllerService,
          PieceSubCategoryControllerService,
-         FileUploadControllerService,
+         FileControllerService,
          PieceControllerService
        } from '../../shared/services/backend/api/api';
 
@@ -37,14 +37,11 @@ export class PiecePage implements OnInit {
               public pieceCategoryControllerService: PieceCategoryControllerService,
               public pieceSubCategoryControllerService: PieceSubCategoryControllerService,
               public pieceControllerService: PieceControllerService,
-              public fileUploadControllerService: FileUploadControllerService,
+              public fileControllerService: FileControllerService,
               public photoService: PhotoService) { }
 
   async ngOnInit() {
     this.getFamilies();
-
-    // load images from storage
-    //await this.photoService.loadSaved();
   }
 
   private initializeForm() {
@@ -145,12 +142,16 @@ export class PiecePage implements OnInit {
     await actionSheet.present();
   }
 
-  public cancelPiece(event: any) {
+  public async cancelPiece(event: any) {
     this.initializeForm();
 
-    this.modalController.dismiss({
-      'dismissed': true
-    });
+    const isModalOpened = await this.modalController.getTop();
+
+    if (isModalOpened) {
+      this.modalController.dismiss({
+        'dismissed': true
+      });
+    }
   }
 
   public async savePiece(event: any) {
@@ -172,7 +173,7 @@ export class PiecePage implements OnInit {
     const fileName: string = new Date().getTime() + '.jpeg';
 
     // upload the image of the piece
-    this.fileUploadControllerService.fileUploadControllerFileUpload(blob, fileName)
+    this.fileControllerService.fileControllerFileUpload(blob, fileName)
       .subscribe((result: any) => {
         // create a new piece
         let piece: Piece = {
