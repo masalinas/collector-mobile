@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
+
 import { ActionSheetController, ModalController, ToastController } from '@ionic/angular';
 
 import { Photo, PhotoService } from '../../services/photo.service';
@@ -21,16 +23,22 @@ import { PieceFamilyControllerService,
   styleUrls: ['piece.page.scss']
 })
 export class PiecePage implements OnInit {
-  public pieceFamilySelected: PieceFamily;
-  public pieceCategorySelected: PieceCategory;
-  public pieceSubCategorySelected: PieceSubCategory;
-  public pieceNameSelected: string;
+  public pieceFormGroup: FormGroup = this.formBuilder.group({
+     pieceFamilyId: new FormControl('', Validators.compose([Validators.required])),
+     pieceCategoryId: new FormControl('', Validators.compose([Validators.required])),
+     pieceSubCategoryId: new FormControl('', Validators.compose([Validators.required])),
+     name: new FormControl('', Validators.compose([Validators.required]))
+  });
+
+  public photoSelected: any;
+  public pieceSelected: Piece;
 
   public pieceFamilies: PieceFamily[];
   public pieceCategories: PieceCategory[];
   public pieceSubCategories: PieceSubCategory[];
 
-  constructor(public actionSheetController: ActionSheetController,
+  constructor(private formBuilder:FormBuilder,
+              public actionSheetController: ActionSheetController,
               public modalController: ModalController,
               public toastController: ToastController,
               public pieceFamilyControllerService: PieceFamilyControllerService,
@@ -38,20 +46,36 @@ export class PiecePage implements OnInit {
               public pieceSubCategoryControllerService: PieceSubCategoryControllerService,
               public pieceControllerService: PieceControllerService,
               public fileControllerService: FileControllerService,
-              public photoService: PhotoService) { }
+              public photoService: PhotoService) {
+      // initialize variables
+      this.initializeForm();
+  }
 
   async ngOnInit() {
+    // get families
     this.getFamilies();
   }
 
-  private initializeForm() {
-    this.pieceFamilySelected = undefined;
-    this.pieceCategorySelected = undefined;
-    this.pieceCategories = [];
-    this.pieceSubCategorySelected = undefined;
-    this.pieceSubCategories = [];
-    this.pieceNameSelected = undefined;
+  @Input() public set piece(item: any) {
+    this.pieceSelected = item.piece;
 
+    // bind piece metadata
+    this.getFamilies();
+
+    this.pieceFormGroup.controls.name.setValue(this.pieceSelected.name);
+
+    // piece piece image
+    this.photoSelected = {filepath: item.piece.fileName,
+                          webviewPath: item.imagePath,
+                          fileName: item.piece.fileName};
+    this.photoService.photos.push(this.photoSelected);
+  }
+
+  private initializeForm() {
+    this.pieceFormGroup.reset({});
+
+    this.pieceCategories = [];
+    this.pieceSubCategories = [];
     this.photoService.photos = [];
   }
 
@@ -67,6 +91,12 @@ export class PiecePage implements OnInit {
     this.pieceFamilyControllerService.pieceFamilyControllerFind()
       .subscribe((pieceFamilies: any) => {
         this.pieceFamilies = pieceFamilies;
+
+        if (this.pieceSelected) {
+          this.pieceFormGroup.controls.pieceFamilyId.setValue(this.pieceSelected.pieceFamilyId);
+
+          this.getCategoriesByFamily();
+        }
     },
     err => {
       console.log(err);
@@ -74,12 +104,18 @@ export class PiecePage implements OnInit {
   }
 
   private getCategoriesByFamily() {
-    if (this.pieceFamilySelected) {
-      let filter: any = {filter: JSON.stringify({where: {pieceFamilyId: this.pieceFamilySelected.id}})};
+    if (this.pieceFormGroup.controls.pieceFamilyId) {
+      let filter: any = {filter: JSON.stringify({where: {pieceFamilyId: this.pieceFormGroup.controls.pieceFamilyId.value}})};
 
       this.pieceCategoryControllerService.pieceCategoryControllerFind(filter)
         .subscribe((pieceCategories: any) => {
           this.pieceCategories = pieceCategories;
+
+          if (this.pieceSelected) {
+            this.pieceFormGroup.controls.pieceCategoryId.setValue(this.pieceSelected.pieceCategoryId);
+
+            this.getSubCategoriesByCategory();
+          }
       },
       err => {
         console.log(err);
@@ -88,12 +124,16 @@ export class PiecePage implements OnInit {
   }
 
   private getSubCategoriesByCategory() {
-    if (this.pieceCategorySelected) {
-      let filter: any = {filter: JSON.stringify({where: {pieceCategoryId: this.pieceCategorySelected.id}})};
+    if (this.pieceFormGroup.controls.pieceCategoryId) {
+      let filter: any = {filter: JSON.stringify({where: {pieceCategoryId: this.pieceFormGroup.controls.pieceCategoryId.value}})};
 
       this.pieceSubCategoryControllerService.pieceSubCategoryControllerFind(filter)
         .subscribe((pieceSubCategories: any) => {
           this.pieceSubCategories = pieceSubCategories;
+
+          if (this.pieceSelected) {
+            this.pieceFormGroup.controls.pieceSubCategoryId.setValue(this.pieceSelected.pieceSubCategoryId);
+          }
       },
       err => {
         console.log(err);
@@ -103,9 +143,9 @@ export class PiecePage implements OnInit {
 
   public onSelectFamily(event: any) {
       // initialize selectors
-      this.pieceCategorySelected = undefined;
+      this.pieceFormGroup.controls.pieceCategoryId.setValue(undefined);
       this.pieceCategories = [];
-      this.pieceSubCategorySelected = undefined;
+      this.pieceFormGroup.controls.pieceSubCategoryId.setValue(undefined);
       this.pieceSubCategories = [];
 
       // get piece categories
@@ -128,6 +168,7 @@ export class PiecePage implements OnInit {
         role: 'destructive',
         icon: 'trash',
         handler: () => {
+          this.photoSelected = photo;
           this.photoService.deletePicture(photo, position);
         }
       }, {
@@ -149,55 +190,86 @@ export class PiecePage implements OnInit {
 
     if (isModalOpened) {
       this.modalController.dismiss({
-        'dismissed': true
+        'saved': false
       });
     }
   }
 
   public async savePiece(event: any) {
-    if (this.pieceFamilySelected === undefined ||
-        this.pieceCategorySelected === undefined ||
-        this.pieceSubCategorySelected  === undefined ||
-        this.pieceNameSelected  === undefined ||
-        this.photoService.photos.length === 0) {
-          this.presentToast('Fill all mandatory piece fields.');
+    const isModalOpened = await this.modalController.getTop();
 
-          return;
-        }
-
-    // get the first image from local storage
+    // get the first blob and filename from photos collection
     const base64Response = await fetch(this.photoService.photos[0].webviewPath!);
 
-    // get blob and filename
     const blob = await base64Response.blob();
-    const fileName: string = new Date().getTime() + '.jpeg';
+    const fileName: string = this.photoService.photos[0].fileName;
 
-    // upload the image of the piece
-    this.fileControllerService.fileControllerFileUpload(blob, fileName)
-      .subscribe((result: any) => {
-        // create a new piece
-        let piece: Piece = {
-          pieceFamilyId: this.pieceFamilySelected.id,
-          pieceCategoryId: this.pieceCategorySelected.id,
-          pieceSubCategoryId: this.pieceSubCategorySelected.id,
-          name: this.pieceNameSelected,
-          fileName: fileName,
-          country: 'us',
-          creationDate: new Date()
-        };
+    // update a piece
+    if (isModalOpened) {
+      // STEP01: remove the previous image
+      this.fileControllerService.fileControllerDeleteByName(this.pieceSelected.fileName)
+        .subscribe((result: any) => {
+          // STEP02: create the new image
+          this.fileControllerService.fileControllerFileUpload(blob, fileName)
+            .subscribe((result: any) => {
+              let piece: Piece = {
+                pieceFamilyId: this.pieceFormGroup.value.pieceFamilyId,
+                pieceCategoryId: this.pieceFormGroup.value.pieceCategoryId,
+                pieceSubCategoryId: this.pieceFormGroup.value.pieceSubCategoryId,
+                name: this.pieceFormGroup.value.name,
+                fileName: fileName,
+                country: 'us',
+                creationDate: new Date()
+              };
 
-        this.pieceControllerService.pieceControllerCreate(piece)
-          .subscribe((result: any) => {
-            this.initializeForm();
+              // STEP03: create the new piece attached to the image
+              this.pieceControllerService.pieceControllerReplaceById(this.pieceSelected.id, piece)
+                .subscribe((result: any) => {
+                  this.modalController.dismiss({
+                    'saved': true
+                  });
+              },
+              err => {
+                console.log(err);
+              });
+          },
+          err => {
+            console.log(err);
+          });
+      },
+      err => {
+        console.log(err);
+      });
+    }
+    // create a piece
+    else {
+      // STEP01: create the new image
+      this.fileControllerService.fileControllerFileUpload(blob, fileName)
+        .subscribe((result: any) => {
+          let piece: Piece = {
+            pieceFamilyId: this.pieceFormGroup.value.pieceFamilyId,
+            pieceCategoryId: this.pieceFormGroup.value.pieceCategoryId,
+            pieceSubCategoryId: this.pieceFormGroup.value.pieceSubCategoryId,
+            name: this.pieceFormGroup.value.name,
+            fileName: fileName,
+            country: 'us',
+            creationDate: new Date()
+          };
 
-            this.presentToast('Your piece have been saved.');
-        },
-        err => {
-          console.log(err);
-        });
-    },
-    err => {
-      console.log(err);
-    });
+          // STEP02: create the new piece attached to the image
+          this.pieceControllerService.pieceControllerCreate(piece)
+            .subscribe((result: any) => {
+              this.initializeForm();
+
+              this.presentToast('Your piece have been saved.');
+          },
+          err => {
+            console.log(err);
+          });
+      },
+      err => {
+        console.log(err);
+      });
+    }
   }
 }

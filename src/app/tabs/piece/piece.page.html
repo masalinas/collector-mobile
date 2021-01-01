@@ -6,7 +6,7 @@
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="savePiece($event)">
+      <ion-button (click)="savePiece($event)" [disabled]="!pieceFormGroup.valid || this.photoService.photos.length === 0">
         Save
       </ion-button>
     </ion-buttons>
@@ -24,34 +24,36 @@
     </ion-row>
   </ion-grid>
 
-  <ion-item>
-    <ion-label>Family*</ion-label>
-    <ion-select [(ngModel)]="pieceFamilySelected" interface="action-sheet" (ionChange)="onSelectFamily($event)">
-      <ion-select-option *ngFor="let pieceFamily of pieceFamilies" [value]="pieceFamily">{{pieceFamily.name}}</ion-select-option>
-    </ion-select>
-  </ion-item>
+  <form [formGroup]="pieceFormGroup">
+    <ion-item>
+      <ion-label>Family*</ion-label>
+      <ion-select formControlName="pieceFamilyId" interface="action-sheet" (ionChange)="onSelectFamily($event)">
+        <ion-select-option *ngFor="let pieceFamily of pieceFamilies" value="{{pieceFamily.id}}">{{pieceFamily.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
 
-  <ion-item>
-    <ion-label>Category*</ion-label>
-    <ion-select [(ngModel)]="pieceCategorySelected" interface="action-sheet" (ionChange)="onSelectCategory($event)">
-      <ion-select-option *ngFor="let pieceCategory of pieceCategories" [value]="pieceCategory">{{pieceCategory.name}}</ion-select-option>
-    </ion-select>
-  </ion-item>
+    <ion-item>
+      <ion-label>Category*</ion-label>
+      <ion-select formControlName="pieceCategoryId" interface="action-sheet" (ionChange)="onSelectCategory($event)">
+        <ion-select-option *ngFor="let pieceCategory of pieceCategories" value="{{pieceCategory.id}}">{{pieceCategory.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
 
-  <ion-item>
-    <ion-label>SubCategory*</ion-label>
-    <ion-select [(ngModel)]="pieceSubCategorySelected" interface="action-sheet">
-      <ion-select-option *ngFor="let pieceSubCategory of pieceSubCategories" [value]="pieceSubCategory">{{pieceSubCategory.name}}</ion-select-option>
-    </ion-select>
-  </ion-item>
+    <ion-item>
+      <ion-label>SubCategory*</ion-label>
+      <ion-select formControlName="pieceSubCategoryId" interface="action-sheet">
+        <ion-select-option *ngFor="let pieceSubCategory of pieceSubCategories" value="{{pieceSubCategory.id}}">{{pieceSubCategory.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
 
-  <ion-item>
-    <ion-label>Name*</ion-label>
-    <ion-input [(ngModel)]="pieceNameSelected" placeholder="Piece name"></ion-input>
-  </ion-item>
+    <ion-item>
+      <ion-label>Name*</ion-label>
+      <ion-input formControlName="name" placeholder="Piece name"></ion-input>
+    </ion-item>
+  </form>
 
   <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button (click)="addPhotoToGallery()">
+    <ion-fab-button (click)="addPhotoToGallery()" [disabled]="photoService.photos.length === 1">
       <ion-icon name="camera"></ion-icon>
     </ion-fab-button>
   </ion-fab>

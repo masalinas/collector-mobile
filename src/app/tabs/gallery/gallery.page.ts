@@ -22,7 +22,7 @@ export class GalleryPage {
   public gallery: any[] = [];
   public galleryFiltered: any [];
 
-  @ViewChild(IonItemSliding) slidingItem: IonItemSliding;
+  //@ViewChild(IonItemSliding) xxx: IonItemSliding;
 
   constructor(public modalController: ModalController,
               public toastController: ToastController,
@@ -92,19 +92,30 @@ export class GalleryPage {
     return await modal.present();
   }
 
-  public async onUpdatePiece(item: any) {
-      const modal = await this.modalController.create({
+  public async onUpdatePiece(component: any, item: any) {
+    const ionItemSliding: IonItemSliding = component;
+
+    const modal = await this.modalController.create({
         component: PiecePage,
         componentProps: {
-          //'modal': modal,
-          'item': item
+          'piece': item
         }
-      });
+    });
 
-      await modal.present();
-      //await modal.onDidDismiss();
+    modal.onDidDismiss().then((dataReturned) => {
+        if (dataReturned !== null) {
+                const value = dataReturned.data;
 
-      //this.slidingItem.close();
+                // autoclose ion slide menu
+                ionItemSliding.close();
+
+                // refresh images
+                if (value.saved === true)
+                  this.getPieces();
+          }
+    });
+
+    await modal.present();
   }
 
   public onDeletePiece(item: any) {
