@@ -1,15 +1,16 @@
-import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { IonicModule } from '@ionic/angular';
+
 import { GalleryPageRoutingModule } from './gallery-routing.module';
 
-import { PieceFilterPipe } from '../../pipes/FilterPipe';
-
+import { PiecePageModule } from '../piece/piece.module';
 import { GalleryPage } from './gallery.page';
 import { PieceCardComponent } from './piece-card/piece-card.component';
-import { PiecePageModule } from '../piece/piece.module';
+
+import { PieceFilterPipe } from '../../pipes/FilterPipe';
 
 @NgModule({
   imports: [

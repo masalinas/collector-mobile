@@ -1,30 +1,32 @@
 import { Component, ViewChild } from '@angular/core';
+import { Router } from "@angular/router";
 
 import { ModalController, ToastController, IonItemSliding } from '@ionic/angular';
+
 import { PieceCardComponent } from './piece-card/piece-card.component';
 import { PiecePage } from '../piece/piece.page';
 
 import { Photo, PhotoService } from '../../services/photo.service';
 
 import { Piece } from '../../shared/services/backend/model/models';
-import { PieceControllerService,
-         FileControllerService,
-        } from '../../shared/services/backend/api/api';
+import { PieceControllerService, FileControllerService} from '../../shared/services/backend/api/api';
 
 @Component({
-  selector: 'app-gallery',
+  selector: 'tab-gallery',
   templateUrl: 'gallery.page.html',
   styleUrls: ['gallery.page.scss']
 })
 export class GalleryPage {
+  private pageNumber = 1;
+  private pageLimit = 8;
+
   public pieces: Piece[];
   public filterTerm: string;
   public gallery: any[] = [];
   public galleryFiltered: any [];
 
-  //@ViewChild(IonItemSliding) xxx: IonItemSliding;
-
-  constructor(public modalController: ModalController,
+  constructor(public router: Router,
+              public modalController: ModalController,
               public toastController: ToastController,
               public pieceControllerService: PieceControllerService,
               public fileControllerService: FileControllerService,
@@ -77,6 +79,10 @@ export class GalleryPage {
 
   public onSearch(event) {
     this.galleryFiltered = this.gallery.filter(item => item.piece.name.includes(event.target.value));
+  }
+
+  public doInfinite(event) {
+    //this.getPieces(true, event);
   }
 
   public async onShowDetail(item: any) {
@@ -134,5 +140,9 @@ export class GalleryPage {
     err => {
       console.log(err);
     });
+  }
+
+  public addPiece(event) {
+    this.router.navigate(['tabs/piece']);
   }
 }

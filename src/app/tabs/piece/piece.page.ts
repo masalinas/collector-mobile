@@ -18,7 +18,7 @@ import { PieceFamilyControllerService,
        } from '../../shared/services/backend/api/api';
 
 @Component({
-  selector: 'app-piece',
+  selector: 'tab-piece',
   templateUrl: 'piece.page.html',
   styleUrls: ['piece.page.scss']
 })

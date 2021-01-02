@@ -1,14 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { PiecePageRoutingModule } from './piece-routing.module';
+
 import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
 
 import { PiecePage } from './piece.page';
-import { ExploreContainerComponentModule } from '../../explore-container/explore-container.module';
-
-import { PiecePageRoutingModule } from './piece-routing.module';
 
 @NgModule({
   imports: [
@@ -16,7 +15,6 @@ import { PiecePageRoutingModule } from './piece-routing.module';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ExploreContainerComponentModule,
     PiecePageRoutingModule
   ],
   declarations: [PiecePage],
