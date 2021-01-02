@@ -7,8 +7,11 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-list>
-    <ion-item (click)="onShowCategory($event)">
-    </ion-item>
-  </ion-list>
+  <div style="margin: 20px; height: 100px; width: 100%; background-color:'#1976D2'; border-radius: 10px;
+              display: flex; flex-direction: row; justify-content: start;"
+       *ngFor="let pieceCategory of pieceCategories"
+       (click)="onShowCategory($event)">
+      <h4 style="width: 350px; font-weight:bold; padding-left: 15px">{{pieceCategory.name}}</h4>
+      <ion-img style="width: 100%; padding: 10px;" src="assets/scripophily.png"></ion-img>
+  </div>
 </ion-content>

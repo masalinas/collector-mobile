@@ -7,7 +7,10 @@ import { CategoryPageRoutingModule } from './category-routing.module';
 
 import { IonicModule } from '@ionic/angular';
 
+import { GalleryPageModule } from '../gallery/gallery.module';
+
 import { CategoryPage } from './category.page';
+import { SubCategoryPage } from './subcategory/subcategory.page';
 
 @NgModule({
   imports: [
@@ -16,7 +19,11 @@ import { CategoryPage } from './category.page';
     FormsModule,
     RouterModule.forChild([{ path: '', component: CategoryPage }]),
     CategoryPageRoutingModule,
+    GalleryPageModule,
   ],
-  declarations: [CategoryPage]
+  declarations: [
+    CategoryPage,
+    SubCategoryPage
+  ]
 })
 export class CategoryPageModule {}

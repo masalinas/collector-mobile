@@ -1,5 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
-import { Router } from "@angular/router";
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from "@angular/router";
 
 import { ModalController, ToastController, IonItemSliding } from '@ionic/angular';
 
@@ -16,21 +16,29 @@ import { PieceControllerService, FileControllerService} from '../../shared/servi
   templateUrl: 'gallery.page.html',
   styleUrls: ['gallery.page.scss']
 })
-export class GalleryPage {
+export class GalleryPage implements OnInit {
   private pageNumber = 1;
   private pageLimit = 8;
 
+  public subCategoryId: string;
   public pieces: Piece[];
   public filterTerm: string;
   public gallery: any[] = [];
   public galleryFiltered: any [];
 
   constructor(public router: Router,
+              private route: ActivatedRoute,
               public modalController: ModalController,
               public toastController: ToastController,
               public pieceControllerService: PieceControllerService,
               public fileControllerService: FileControllerService,
               public photoService: PhotoService) {
+  }
+
+  ngOnInit() {
+    this.subCategoryId = this.route.snapshot.paramMap.get('subCategoryId');
+
+    this.getPieces();
   }
 
   private async presentToast(message: string) {
@@ -53,7 +61,15 @@ export class GalleryPage {
   });
 
   public getPieces() {
-    let filter: any = {filter: JSON.stringify({include: [{relation: "pieceSubCategory"}]})};
+    let query: any = {filter: {}};
+
+    query.filter.include = [{relation: "pieceSubCategory"}];
+
+    if (this.subCategoryId) {
+      query.filter.where = {pieceSubCategoryId: this.subCategoryId}
+    }
+
+    let filter: any = {filter: JSON.stringify(query.filter)};
 
     this.pieceControllerService.pieceControllerFind(filter)
       .subscribe((pieces: any) => {
@@ -81,16 +97,10 @@ export class GalleryPage {
     this.galleryFiltered = this.gallery.filter(item => item.piece.name.includes(event.target.value));
   }
 
-  public doInfinite(event) {
-    //this.getPieces(true, event);
-  }
-
   public async onShowDetail(item: any) {
     const modal = await this.modalController.create({
       component: PieceCardComponent,
-      //cssClass: 'my-custom-class',
       componentProps: {
-        //'modal': modal,
         'item': item
       }
     });

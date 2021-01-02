@@ -27,6 +27,9 @@ import { PieceFilterPipe } from '../../pipes/FilterPipe';
   ],
   entryComponents: [
     PieceCardComponent,
+  ],
+  exports: [
+    PieceCardComponent
   ]
 })
 export class GalleryPageModule {}

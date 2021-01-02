@@ -6,7 +6,11 @@ const routes: Routes = [
   {
     path: '',
     component: GalleryPage,
-  }
+  },
+  {
+    path: ':subCategoryId',
+    component: GalleryPage
+  },
 ];
 
 @NgModule({

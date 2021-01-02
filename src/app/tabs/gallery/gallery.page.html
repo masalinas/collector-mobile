@@ -1,9 +1,14 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    
     <ion-title>
       Gallery
     </ion-title>
   </ion-toolbar>
+
   <ion-toolbar>
     <ion-searchbar [(ngModel)]="filterTerm" placeholder="Filter by name">
     </ion-searchbar>

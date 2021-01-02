@@ -1,0 +1,21 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>
+      Subcategories
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div style="margin: 20px; height: 100px; width: 100%; background-color:'#FAC009'; border-radius: 10px;
+              display: flex; flex-direction: row; justify-content: space-between;"
+       *ngFor="let pieceSubCategory of pieceSubCategories"
+       [routerLink]="['/tabs/gallery', pieceSubCategory.id]">
+      <h4 style="width: 350px; font-weight:bold; padding-left: 15px">{{pieceSubCategory.name}}</h4>
+      <ion-img style="width: 100%; padding: 10px;" src="assets/scripophily.png"></ion-img>
+  </div>
+</ion-content>

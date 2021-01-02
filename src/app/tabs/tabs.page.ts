@@ -15,12 +15,12 @@ export class TabsPage {
   }
 
   public onTabChange(event) {
-    if (event.tab === 'gallery') {
+    /*if (event.tab === 'gallery') {
       // get tab component instance from tabs
       const galleryPage: GalleryPage = this.tabs.navCtrl.topOutlet.activatedView.ref.instance;
 
       // refresh pieces to be paint
       galleryPage.getPieces();
-    }
+    }*/
   }
 }
