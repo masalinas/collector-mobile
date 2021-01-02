@@ -155,4 +155,8 @@ export class GalleryPage implements OnInit {
   public addPiece(event) {
     this.router.navigate(['tabs/piece']);
   }
+
+  /*public onBackCategories(event) {
+    this.router.navigate(['tabs/category/sub-category']);
+  }*/
 }
