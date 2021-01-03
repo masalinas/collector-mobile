@@ -28,6 +28,9 @@ ionic capacitor build android --prod
 
 from android studio build android project created and package
 
+result in:
+./collector-mobile/android/app/build/outputs/apk/debug
+
 # create native project for ios devices
 ```javascript
 ionic capacitor build ios --prod
