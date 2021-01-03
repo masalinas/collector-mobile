@@ -3,6 +3,8 @@ import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms'
 
 import { ActionSheetController, ModalController, ToastController } from '@ionic/angular';
 
+import imageCompression from 'browser-image-compression';
+
 import { Photo, PhotoService } from '../../services/photo.service';
 
 import { PieceFamily,
@@ -16,6 +18,12 @@ import { PieceFamilyControllerService,
          FileControllerService,
          PieceControllerService
        } from '../../shared/services/backend/api/api';
+
+const COMPRESS_OPTIONS = {
+   maxSizeMB: 1,
+   maxWidthOrHeight: 1920,
+   useWebWorker: true
+ }
 
 @Component({
   selector: 'tab-piece',
@@ -201,28 +209,30 @@ export class PiecePage implements OnInit {
     // get the first blob and filename from photos collection
     const base64Response = await fetch(this.photoService.photos[0].webviewPath!);
 
-    const blob = await base64Response.blob();
-    const fileName: string = this.photoService.photos[0].fileName;
+    // get blob from base64 and compress
+    let blob = await base64Response.blob();
+    
+    blob = await imageCompression(blob, COMPRESS_OPTIONS);
 
     // update a piece
     if (isModalOpened) {
-      // STEP01: remove the previous image
+      // STEP01: remove the previous filename attached to the piece
       this.fileControllerService.fileControllerDeleteByName(this.pieceSelected.fileName)
         .subscribe((result: any) => {
-          // STEP02: create the new image
-          this.fileControllerService.fileControllerFileUpload(blob, fileName)
+          // STEP02: create an only one new image
+          this.fileControllerService.fileControllerFileUpload(blob)
             .subscribe((result: any) => {
               let piece: Piece = {
                 pieceFamilyId: this.pieceFormGroup.value.pieceFamilyId,
                 pieceCategoryId: this.pieceFormGroup.value.pieceCategoryId,
                 pieceSubCategoryId: this.pieceFormGroup.value.pieceSubCategoryId,
                 name: this.pieceFormGroup.value.name,
-                fileName: fileName,
+                fileName: result.files[0].originalname,
                 country: 'us',
                 creationDate: new Date()
               };
 
-              // STEP03: create the new piece attached to the image
+              // STEP03: create the new piece with filename attached
               this.pieceControllerService.pieceControllerReplaceById(this.pieceSelected.id, piece)
                 .subscribe((result: any) => {
                   this.modalController.dismiss({
@@ -243,20 +253,20 @@ export class PiecePage implements OnInit {
     }
     // create a piece
     else {
-      // STEP01: create the new image
-      this.fileControllerService.fileControllerFileUpload(blob, fileName)
+      // STEP01: create an only one new image
+      this.fileControllerService.fileControllerFileUpload(blob)
         .subscribe((result: any) => {
           let piece: Piece = {
             pieceFamilyId: this.pieceFormGroup.value.pieceFamilyId,
             pieceCategoryId: this.pieceFormGroup.value.pieceCategoryId,
             pieceSubCategoryId: this.pieceFormGroup.value.pieceSubCategoryId,
             name: this.pieceFormGroup.value.name,
-            fileName: fileName,
+            fileName: result.files[0].originalname,
             country: 'us',
             creationDate: new Date()
           };
 
-          // STEP02: create the new piece attached to the image
+          // STEP02: create the new piece with filename attached
           this.pieceControllerService.pieceControllerCreate(piece)
             .subscribe((result: any) => {
               this.initializeForm();

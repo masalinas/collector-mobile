@@ -4,8 +4,9 @@ import { Platform } from '@ionic/angular';
 
 const { Camera, Filesystem, Storage } = Plugins;
 
+const PHOTO_QUALITY = 100;
+
 export interface Photo {
-  fileName: string;
   filepath: string;
   webviewPath: string;
 }
@@ -32,39 +33,6 @@ export class PhotoService {
     reader.readAsDataURL(blob);
   });
 
-  // Save picture to file on device
-  private async savePicture(cameraPhoto: CameraPhoto) {
-    // Convert photo to base64 format, required by Filesystem API to save
-    const base64Data = await this.readAsBase64(cameraPhoto);
-
-    // Write the file to the data directory
-    const fileName = new Date().getTime() + '.jpeg';
-    const savedFile = await Filesystem.writeFile({
-      path: fileName,
-      data: base64Data,
-      directory: FilesystemDirectory.Data
-    });
-
-    if (this.platform.is('hybrid')) {
-      // Display the new image by rewriting the 'file://' path to HTTP
-      // Details: https://ionicframework.com/docs/building/webview#file-protocol
-      return {
-        fileName: new Date().getTime() + '.jpeg',
-        filepath: savedFile.uri,
-        webviewPath: Capacitor.convertFileSrc(savedFile.uri),
-      };
-    }
-    else {
-      // Use webPath to display the new image instead of base64 since it's
-      // already loaded into memory
-      return {
-        fileName: new Date().getTime() + '.jpeg',
-        filepath: fileName,
-        webviewPath: cameraPhoto.webPath
-      };
-    }
-  }
-
   // Read camera photo into base64 format based on the platform the app is running on
   private async readAsBase64(cameraPhoto: CameraPhoto) {
     // "hybrid" will detect Cordova or Capacitor
@@ -82,6 +50,38 @@ export class PhotoService {
       const blob = await response.blob();
 
       return await this.convertBlobToBase64(blob) as string;
+    }
+  }
+
+  // Save picture to file on device
+  private async savePicture(cameraPhoto: CameraPhoto) {
+    // Convert photo to base64 format, required by Filesystem API to save
+    const base64Data = await this.readAsBase64(cameraPhoto);
+
+    // Write the file to the data directory
+    const fileName = new Date().getTime() + '.jpeg';
+    const savedFile = await Filesystem.writeFile({
+      path: fileName,
+      data: base64Data,
+      directory: FilesystemDirectory.Data
+    });
+
+    if (this.platform.is('hybrid')) {
+      // Display the new image by rewriting the 'file://' path to HTTP
+      // Details: https://ionicframework.com/docs/building/webview#file-protocol
+      return {
+        filepath: savedFile.uri,
+        webviewPath: Capacitor.convertFileSrc(savedFile.uri),
+      };
+    }
+    else {
+      // Use webPath to display the new image instead of base64 since it's
+      // already loaded into memory
+      return {
+        filepath: fileName,
+        webviewPath: base64Data
+      //webviewPath: cameraPhoto.webPath
+      };
     }
   }
 
@@ -120,7 +120,7 @@ export class PhotoService {
     const capturedPhoto = await Camera.getPhoto({
       resultType: CameraResultType.Uri, // file-based data; provides best performance
       source: CameraSource.Camera, // automatically take a new photo with the camera
-      quality: 100 // highest quality (0 to 100)
+      quality: PHOTO_QUALITY // highest quality (0 to 100)
     });
 
     const savedImageFile = await this.savePicture(capturedPhoto);
